@@ -8,7 +8,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"time"
 
 	"1mk.no/saunagauge/html"
 	"github.com/facebookgo/grace/gracehttp"
@@ -63,11 +62,8 @@ func main() {
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
-	currentTime := time.Now()
-
 	params := html.HomeParams{
-		Title:       "Sauna",
-		Time:        fmt.Sprintf("%d-%d-%d %d:%d", currentTime.Day(), currentTime.Month(), currentTime.Year(), currentTime.Hour(), currentTime.Minute()),
+		Title:       "Sauna Gauge",
 		Temperature: 39.5,
 		Humidity:    14.1,
 	}

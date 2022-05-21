@@ -1,19 +1,25 @@
 {{define "content"}}
-<h1>{{.Title | uppercase}}</h1>
-<dl>
-    <dt>Current time</dt>
-    <dd class="-smaller">{{.Time}}</dd>
-    <dt>Temperature</dt>
-    <dd>
-        <span hx-get="/temperature" hx-trigger="every 60s">
-            {{.Temperature}}
-        </span>°C
-    </dd>
-    <dt>Humidity</dt>
-    <dd>
-        <span hx-get="/humidity" hx-trigger="every 60s">
-            {{.Humidity}}
-        </span>%
-    </dd>
-<dl>
+<main class="card">
+    <h1><a href="/">{{.Title | uppercase}}</a></h1>
+    <div class="led"></div>
+
+    <dl>
+        <dt>Current time</dt>
+        <dd>
+            <span id="clock" class="-smaller"></span>
+        </dd>
+        <dt>Temperature</dt>
+        <dd>
+            <span hx-get="/temperature" hx-trigger="every 60s">
+                {{.Temperature}}
+            </span>°C
+        </dd>
+        <dt>Humidity</dt>
+        <dd>
+            <span hx-get="/humidity" hx-trigger="every 60s">
+                {{.Humidity}}
+            </span>%
+        </dd>
+    <dl>
+</main>
 {{end}}
