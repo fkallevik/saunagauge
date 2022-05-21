@@ -1,0 +1,13 @@
+* {
+    box-sizing: border-box;
+}
+
+
+dd {
+    font-weight: 600;
+    font-size: 40px;
+}
+
+dd.-smaller {
+    font-size: 24px;
+}

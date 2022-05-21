@@ -1,0 +1,11 @@
+{{define "content"}}
+<h1>{{.Title | uppercase}}</h1>
+<dl>
+    <dt>Current time</dt>
+    <dd class="-smaller">{{.Time}}</dd>
+    <dt>Temperature</dt>
+    <dd>{{.Temperature}}°C</dd>
+    <dt>Humidity</dt>
+    <dd>{{.Humidity}}%</dd>
+<dl>
+{{end}}
