@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/fs"
 	"log"
@@ -14,19 +15,23 @@ import (
 )
 
 type config struct {
-	Port         string
-	IsProduction bool
+	Port       string
+	Production bool
 }
 
 var fsys fs.FS
 
 func main() {
 	cfg := config{
-		Port:         "8080",
-		IsProduction: false,
+		Port:       "8080",
+		Production: true,
 	}
 
-	if cfg.IsProduction {
+	flag.StringVar(&cfg.Port, "port", "8080", "TCP port to listen on")
+	flag.BoolVar(&cfg.Production, "prod", true, "Set to false when developing for a better experience")
+	flag.Parse()
+
+	if cfg.Production {
 		fsys = html.EmbedFS
 	} else {
 		fsys = os.DirFS("html")
