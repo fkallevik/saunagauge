@@ -42,6 +42,8 @@ func main() {
 	mux.Handle("/static/", http.FileServer(http.FS(fsys)))
 
 	mux.HandleFunc("/", home)
+	mux.HandleFunc("/temperature", htmxTemperature)
+	mux.HandleFunc("/humidity", htmxHumidity)
 
 	server := &http.Server{
 		Addr:    net.JoinHostPort("", cfg.Port),
@@ -71,4 +73,12 @@ func home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	html.Home(w, fsys, params)
+}
+
+func htmxTemperature(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "%d", 40)
+}
+
+func htmxHumidity(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "%d", 12)
 }

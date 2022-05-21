@@ -4,8 +4,16 @@
     <dt>Current time</dt>
     <dd class="-smaller">{{.Time}}</dd>
     <dt>Temperature</dt>
-    <dd>{{.Temperature}}°C</dd>
+    <dd>
+        <span hx-get="/temperature" hx-trigger="every 60s">
+            {{.Temperature}}
+        </span>°C
+    </dd>
     <dt>Humidity</dt>
-    <dd>{{.Humidity}}%</dd>
+    <dd>
+        <span hx-get="/humidity" hx-trigger="every 60s">
+            {{.Humidity}}
+        </span>%
+    </dd>
 <dl>
 {{end}}
