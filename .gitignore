@@ -1,2 +1,7 @@
 .DS_Store
+
+bin/*
+!bin/install_tools
+database/database.sqlite3
+
 saunagauge

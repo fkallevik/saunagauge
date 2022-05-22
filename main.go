@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"embed"
 	"flag"
 	"fmt"
 	"io/fs"
@@ -11,24 +13,54 @@ import (
 
 	"1mk.no/saunagauge/html"
 	"github.com/facebookgo/grace/gracehttp"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/sqlite3"
+	"github.com/golang-migrate/migrate/v4/source/httpfs"
+	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type config struct {
 	Port       string
 	Production bool
+	DBFile     string
 }
 
 var fsys fs.FS
 
+//go:embed database/migrations
+var migrations embed.FS
+
 func main() {
 	cfg := config{
 		Port:       "8080",
+		DBFile:     "database/database.sqlite3",
 		Production: true,
 	}
 
+	var migrateOnly bool
+
 	flag.StringVar(&cfg.Port, "port", "8080", "TCP port to listen on")
+	flag.StringVar(&cfg.DBFile, "database", cfg.DBFile, "Path to SQLite database file")
 	flag.BoolVar(&cfg.Production, "prod", true, "Set to false when developing for a better experience")
+	flag.BoolVar(&migrateOnly, "migrate", false, "Run migrations")
 	flag.Parse()
+
+	db, err := sqlx.Connect("sqlite3", cfg.DBFile)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	dbLogger := log.New(os.Stderr, "db :: ", log.LstdFlags)
+
+	if migrateOnly {
+		if err = ensureSchema(db.DB); err != nil {
+			panic(err)
+		}
+		dbLogger.Printf("applied migrations")
+		return
+	}
 
 	if cfg.Production {
 		fsys = html.EmbedFS
@@ -59,6 +91,29 @@ func main() {
 	); err != nil {
 		panic(err)
 	}
+}
+
+func ensureSchema(db *sql.DB) error {
+	sourceInstance, err := httpfs.New(http.FS(migrations), "database/migrations")
+	defer sourceInstance.Close()
+	if err != nil {
+		return fmt.Errorf("invalid source instance, %w", err)
+	}
+	driver, err := sqlite3.WithInstance(db, &sqlite3.Config{})
+	if err != nil {
+		return fmt.Errorf("invalid target sqlite instance, %w", err)
+	}
+	m, err := migrate.NewWithInstance(
+		"httpfs",
+		sourceInstance, "sqlite3", driver)
+	if err != nil {
+		return fmt.Errorf("failed to initialize migrate instance, %w", err)
+	}
+	err = m.Up()
+	if err != nil && err != migrate.ErrNoChange {
+		return err
+	}
+	return nil
 }
 
 func home(w http.ResponseWriter, r *http.Request) {
