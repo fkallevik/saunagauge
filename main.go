@@ -56,6 +56,7 @@ func main() {
 
 	if migrateOnly {
 		if err = ensureSchema(db.DB); err != nil {
+			db.Close()
 			panic(err)
 		}
 		dbLogger.Printf("applied migrations")
