@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"os"
 
-	"1mk.no/saunagauge/html"
+	"1mk.no/saunagauge/internal/html"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
@@ -65,7 +65,7 @@ func main() {
 	if cfg.Production {
 		fsys = html.EmbedFS
 	} else {
-		fsys = os.DirFS("html")
+		fsys = os.DirFS("internal/html")
 	}
 
 	mux := http.NewServeMux()
