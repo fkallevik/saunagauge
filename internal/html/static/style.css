@@ -41,6 +41,12 @@ body {
     justify-content: center;
 }
 
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 h1 {
     font-size: 12px;
     display: block;

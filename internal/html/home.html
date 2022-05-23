@@ -9,13 +9,13 @@
             <span id="clock" class="-smaller"></span>
         </dd>
         <dt>Temperature</dt>
-        <dd>
+        <dd class="flex-center">
             <span hx-get="/temperature" hx-trigger="every 60s">
                 {{.Temperature}}
             </span>°C
         </dd>
         <dt>Humidity</dt>
-        <dd>
+        <dd class="flex-center">
             <span hx-get="/humidity" hx-trigger="every 60s">
                 {{.Humidity}}
             </span>%
