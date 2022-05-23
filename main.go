@@ -12,6 +12,8 @@ import (
 	"os"
 
 	"1mk.no/saunagauge/internal/html"
+	"1mk.no/saunagauge/internal/sauna"
+	"1mk.no/saunagauge/internal/server"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
@@ -69,13 +71,20 @@ func main() {
 		fsys = os.DirFS("internal/html")
 	}
 
+	sauna := sauna.New(db)
+
+	httpLogger := log.New(os.Stderr, "http :: ", log.LstdFlags)
+	s := server.New(sauna, httpLogger)
+
+	fmt.Println(s)
+
 	mux := http.NewServeMux()
 
 	mux.Handle("/static/", http.FileServer(http.FS(fsys)))
 
 	mux.HandleFunc("/", home)
-	mux.HandleFunc("/temperature", htmxTemperature)
-	mux.HandleFunc("/humidity", htmxHumidity)
+	mux.HandleFunc("/temperature", s.GetTemperature())
+	mux.HandleFunc("/humidity", s.GetHumidity())
 
 	server := &http.Server{
 		Addr:    net.JoinHostPort("", cfg.Port),
@@ -125,12 +134,4 @@ func home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	html.Home(w, fsys, params)
-}
-
-func htmxTemperature(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "%d", 40)
-}
-
-func htmxHumidity(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "%d", 12)
 }
